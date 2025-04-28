@@ -19,8 +19,10 @@ function fetchAndProcessArticles() {
     .then((response) => response.json())
     .then((data) => {
       const articles = data.response.docs;
+      console.log(data);
       console.log(`🎉 Retrieved ${articles.length} article(s):`);
       articles.forEach((article, idx) => {
+        if (idx === 9) return;
         const gridContainer = document.createElement("div");
         gridContainer.classList.add("grid-container");
 

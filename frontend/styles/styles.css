@@ -10,7 +10,7 @@
 .main-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(4, 500px);
+  grid-template-rows: repeat(3, 500px);
   place-items: center;
   justify-content: center;
   margin-top: 10px;
