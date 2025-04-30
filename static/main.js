@@ -3,15 +3,15 @@ const BASE_URL = `https://api.nytimes.com/svc/search/v2/articlesearch.json?fq=ti
 const imageGrid = document.getElementById("image-grid");
 
 const imagePaths = [
-  "./assets/image1.jpg",
-  "./assets/image2.jpg",
-  "./assets/image3.jpg",
-  "./assets/image4.jpg",
-  "./assets/image5.jpg",
-  "./assets/image6.jpg",
-  "./assets/image7.jpg",
-  "./assets/image8.jpg",
-  "./assets/image9.jpg",
+  "/static/assets/image1.jpg",
+  "/static/assets/image2.jpg",
+  "/static/assets/image3.jpg",
+  "/static/assets/image4.jpg",
+  "/static/assets/image5.jpg",
+  "/static/assets/image6.jpg",
+  "/static/assets/image7.jpg",
+  "/static/assets/image8.jpg",
+  "/static/assets/image9.jpg",
 ];
 
 function fetchAndProcessArticles() {
