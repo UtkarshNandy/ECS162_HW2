@@ -2,8 +2,10 @@ from flask import Flask, jsonify, send_from_directory
 import os
 from flask_cors import CORS
 
-static_path = os.getenv('STATIC_PATH','static')
-template_path = os.getenv('TEMPLATE_PATH','templates')
+# 'static' 'templates'
+# goes in the below two lines as second arg
+static_path = os.getenv('STATIC_PATH', 'static')
+template_path = os.getenv('TEMPLATE_PATH', 'templates')
 
 app = Flask(__name__, static_folder=static_path, template_folder=template_path)
 CORS(app)

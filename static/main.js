@@ -1,5 +1,3 @@
-const BASE_URL = `https://api.nytimes.com/svc/search/v2/articlesearch.json?fq=timesTag.location:(%22Davis%22%20%22Sacramento%22)&page=0&api-key=RmyDhz4NtjXQMhBO6eTE1FAs7l31AXoJ`;
-
 const imageGrid = document.getElementById("image-grid");
 
 const imagePaths = [
@@ -14,48 +12,74 @@ const imagePaths = [
   "/static/assets/image9.jpg",
 ];
 
-function fetchAndProcessArticles() {
-  fetch(BASE_URL)
+function getApiKey() {
+  return fetch("/api/key")
     .then((response) => response.json())
-    .then((data) => {
-      const articles = data.response.docs;
-      console.log(data);
-      console.log(`🎉 Retrieved ${articles.length} article(s):`);
-      articles.forEach((article, idx) => {
-        if (idx === 9) return;
-        const gridContainer = document.createElement("div");
-        gridContainer.classList.add("grid-container");
+    .then((data) => data.apiKey) // extract API key from response
+    .catch((err) => {
+      console.error("Error fetching API key:", err);
+      throw new Error("Unable to fetch API key");
+    });
+}
 
-        const articleContainer = document.createElement("div");
-        articleContainer.classList.add("article-container");
+function fetchAndProcessArticles() {
+  // fetch API key
+  getApiKey()
+    .then((apiKey) => {
+      // Construct the BASE_URL using the API key fetched from the backend
+      const BASE_URL =
+        `https://api.nytimes.com/svc/search/v2/articlesearch.json` +
+        `?fq=timesTag.location:(%22Davis%22%20%22Sacramento%22)` +
+        `&sort=newest` +
+        `&page=0` +
+        `&api-key=${apiKey}`;
 
-        // create image
-        const image = document.createElement("img");
-        const imageFromArray = imagePaths[idx % imagePaths.length]; // This ensures a circular fallback
-        image.src = imageFromArray;
-        image.alt = "Article Image";
-        image.classList.add("article-image"); // Optional class for styling
-        articleContainer.appendChild(image);
+      // fetch articles
+      fetch(BASE_URL)
+        .then((response) => response.json())
+        .then((data) => {
+          const articles = data.response.docs;
+          console.log(data);
+          console.log(`🎉 Retrieved ${articles.length} article(s):`);
+          articles.forEach((article, idx) => {
+            if (idx === 9) return;
+            const gridContainer = document.createElement("div");
+            gridContainer.classList.add("grid-container");
 
-        // Create the header
-        const header = document.createElement("h1");
-        header.textContent = article.headline.main;
-        header.classList.add("article-header");
-        articleContainer.appendChild(header);
+            const articleContainer = document.createElement("div");
+            articleContainer.classList.add("article-container");
 
-        // // Create a small paragraph (summary or excerpt)
-        const paragraph = document.createElement("p");
-        paragraph.textContent = article.abstract || "No description available."; // Use abstract or fallback text
-        paragraph.classList.add("article-paragraph"); // Optional class for styling
-        articleContainer.appendChild(paragraph);
+            // Create image
+            const image = document.createElement("img");
+            const imageFromArray = imagePaths[idx % imagePaths.length]; // Circular fallback
+            image.src = imageFromArray;
+            image.alt = "Article Image";
+            image.classList.add("article-image");
+            articleContainer.appendChild(image);
 
-        gridContainer.appendChild(articleContainer);
-        // Append the article container to the grid
-        imageGrid.appendChild(gridContainer);
-      });
+            // Create header
+            const header = document.createElement("h1");
+            header.textContent = article.headline.main;
+            header.classList.add("article-header");
+            articleContainer.appendChild(header);
+
+            // Create paragraph (summary or excerpt)
+            const paragraph = document.createElement("p");
+            paragraph.textContent =
+              article.abstract || "No description available.";
+            paragraph.classList.add("article-paragraph");
+            articleContainer.appendChild(paragraph);
+
+            gridContainer.appendChild(articleContainer);
+            imageGrid.appendChild(gridContainer);
+          });
+        })
+        .catch((err) => {
+          showError(`Fetch failed: ${err.message}`);
+        });
     })
     .catch((err) => {
-      showError(`Fetch failed: ${err.message}`);
+      console.error("Error:", err.message);
     });
 }
 
