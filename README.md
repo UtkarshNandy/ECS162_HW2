@@ -11,7 +11,7 @@ Testing:
 Python flask test:
 
 - cd hw2-app
-- pytest tests/test_app.py
+- PYTHONPATH=./ pytest tests/test_app.py
 
 Jest:
 
