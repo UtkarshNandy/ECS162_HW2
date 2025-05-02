@@ -1,12 +1,9 @@
 // static/main.js
 
 function getApiKey() {
-  return fetch("/api/key")
-    .then((response) => response.json())
-    .then((data) => data.apiKey)
-    .catch((err) => {
-      console.error("Error fetching API key:", err);
-      throw new Error("Unable to fetch API key");
+  return fetch("/api/key").then((response) => response.json()).then((data) => data.apiKey).catch((err) => {
+      console.error("API fetch error", err);
+      throw new Error("API fetch error");
     });
 }
 
@@ -17,7 +14,7 @@ function fetchAndProcessArticles() {
     return Promise.resolve();
   }
 
-  // Return the promise chain so callers can await
+  // return the promise chain 
   return getApiKey()
     .then((apiKey) => {
       const BASE_URL =
@@ -31,8 +28,6 @@ function fetchAndProcessArticles() {
     .then((response) => response.json())
     .then((data) => {
       const articles = data.response.docs;
-      console.log(data);
-      console.log(`🎉 Retrieved ${articles.length} article(s):`);
       articles.forEach((article, idx) => {
         if (idx === 9) return;
 
@@ -65,7 +60,7 @@ function fetchAndProcessArticles() {
         articleContainer.appendChild(header);
 
         const paragraph = document.createElement("p");
-        paragraph.textContent = article.abstract || "No description available.";
+        paragraph.textContent = article.abstract || "no description";
         paragraph.classList.add("article-paragraph");
         articleContainer.appendChild(paragraph);
 
@@ -78,11 +73,11 @@ function fetchAndProcessArticles() {
     });
 }
 
-// Export for Node (tests) or auto-run in browser
+// export for node tests
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { getApiKey, fetchAndProcessArticles };
 } else {
-  // In browser: run after DOM is ready (handles both before/after load)
+  // in browser
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", fetchAndProcessArticles);
   } else {

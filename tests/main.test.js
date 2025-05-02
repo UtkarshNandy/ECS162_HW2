@@ -4,7 +4,6 @@
 
 global.fetch = jest.fn();
 
-// 2) Then pull in your functions (the import will no longer crash):
 const { getApiKey, fetchAndProcessArticles } = require("../static/main.js");
 
 beforeEach(() => {
@@ -15,7 +14,7 @@ beforeEach(() => {
 });
 
 describe("getApiKey()", () => {
-  it("fetches from /api/key and returns apiKey", async () => {
+  it("fetches from /api/key", async () => {
     fetch.mockResolvedValueOnce({
       json: () => Promise.resolve({ apiKey: "FAKE_KEY" }),
     });
@@ -27,21 +26,21 @@ describe("getApiKey()", () => {
 });
 
 describe("fetchAndProcessArticles()", () => {
-  it("renders a fake article into the DOM", async () => {
-    // first fetch → API key
+  it("renders fake article", async () => {
+    // fetch API key
     fetch
       .mockResolvedValueOnce({
         json: () => Promise.resolve({ apiKey: "FKEY" }),
       })
-      // second fetch → NYT payload
+      // NYT API call
       .mockResolvedValueOnce({
         json: () =>
           Promise.resolve({
             response: {
               docs: [
                 {
-                  headline: { main: "My Test Title" },
-                  abstract: "Some cool abstract",
+                  headline: { main: "TEST" },
+                  abstract: "abstract",
                   multimedia: [{ url: "img1.jpg" }],
                   web_url: "http://example.com",
                 },
@@ -54,11 +53,11 @@ describe("fetchAndProcessArticles()", () => {
 
     const header = document.querySelector(".article-header");
     const para = document.querySelector(".article-paragraph");
-    expect(header.textContent).toBe("My Test Title");
-    expect(para.textContent).toBe("Some cool abstract");
+    expect(header.textContent).toBe("TEST");
+    expect(para.textContent).toBe("abstract");
   });
 
-  it("calls NYT with the Davis/Sacramento filter in the URL", async () => {
+  it("NYT API call", async () => {
     fetch
       .mockResolvedValueOnce({
         json: () => Promise.resolve({ apiKey: "FKEY" }),
@@ -69,7 +68,7 @@ describe("fetchAndProcessArticles()", () => {
 
     await fetchAndProcessArticles();
 
-    // the second fetch call is index 1
+    // index 1 for second fetch
     const calledUrl = fetch.mock.calls[1][0];
     expect(calledUrl).toMatch(
       /^https:\/\/api\.nytimes\.com\/svc\/search\/v2\/articlesearch\.json/
@@ -79,14 +78,14 @@ describe("fetchAndProcessArticles()", () => {
     );
   });
 
-  it("validates that NYT payload has title, url, multimedia & abstract", async () => {
+  it("validates NYT payload", async () => {
     const goodDoc = {
       headline: { main: "T" },
       web_url: "u",
       multimedia: [],
       abstract: "A",
     };
-    // simulate API key + payload
+    // simulates API key and payload
     fetch
       .mockResolvedValueOnce({ json: () => Promise.resolve({ apiKey: "K" }) })
       .mockResolvedValueOnce({
@@ -94,8 +93,7 @@ describe("fetchAndProcessArticles()", () => {
       });
 
     await fetchAndProcessArticles();
-
-    // we know payload docs[0] was our goodDoc
+    
     expect(goodDoc.headline.main).toEqual(expect.any(String));
     expect(goodDoc.web_url).toEqual(expect.stringContaining(""));
     expect(Array.isArray(goodDoc.multimedia)).toBe(true);

@@ -3,7 +3,7 @@ import pytest
 from app import app
 import werkzeug
 
-# give it some placeholder version so Flask’s test client can read it
+# flask version placeholder
 werkzeug.__version__ = "2.3.0"
 
 @pytest.fixture(autouse=True)
